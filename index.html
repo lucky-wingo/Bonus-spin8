@@ -13,7 +13,6 @@
             --text-cream: #f0e6d2;
         }
 
-        /* ปรับแต่งให้พอดีมือถือ ป้องกันการเลื่อนจอแนวนอน */
         body {
             display: flex;
             flex-direction: column;
@@ -33,7 +32,6 @@
             box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.6); 
         }
 
-        /* ใช้ clamp ให้ตัวอักษรย่อขยายตามขนาดจออัตโนมัติ */
         h1 {
             font-family: 'Cinzel Decorative', cursive;
             font-size: clamp(1.8rem, 6vw, 3rem); 
@@ -48,19 +46,20 @@
             z-index: 2;
         }
 
-        /* --- ส่วนของมาสคอต (ปรับให้พอดีมือถือ) --- */
+        /* --- ส่วนของมาสคอต --- */
         .mascot-container {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            z-index: 1; /* ให้อยู่หลังวงล้อนิดๆ เวลาจอมือถือเล็ก จะได้ไม่บัง */
+            /* แก้ไข Z-index เป็น 5 ให้อยู่ด้านหน้าวงล้อเสมอ */
+            z-index: 5; 
             pointer-events: none; 
         }
         .mascot-container.left { left: 2%; }
         .mascot-container.right { right: 2%; }
 
         .mascot {
-            width: clamp(80px, 25vw, 180px); /* ย่อขนาดตัวการ์ตูนตามหน้าจอ */
+            width: clamp(90px, 25vw, 180px); 
             height: auto;
             filter: drop-shadow(0 10px 15px rgba(0,0,0,0.6)); 
         }
@@ -79,12 +78,11 @@
             animation-duration: 0.8s !important; 
         }
 
-        /* --- วงล้อปรับขนาดตามจอ (Responsive Wheel) --- */
         .wheel-wrapper-outer {
             position: relative;
             width: 100%;
-            max-width: 400px; /* ขนาดใหญ่สุดบน PC */
-            padding: 10px; /* ลดขอบทองลงหน่อยบนมือถือ */
+            max-width: 400px; 
+            padding: 10px; 
             box-sizing: border-box;
             border-radius: 50%;
             background: conic-gradient(
@@ -95,13 +93,13 @@
                 0 0 30px rgba(255, 215, 0, 0.4), 
                 inset 0 0 15px rgba(0,0,0,0.8),
                 0 15px 30px rgba(0,0,0,0.8);
-            z-index: 2;
+            z-index: 2; /* วงล้ออยู่ z-index 2 (อยู่หลังมาสคอต) */
         }
 
         .wheel-wrapper-inner {
              position: relative;
              width: 100%;
-             aspect-ratio: 1 / 1; /* บังคับให้เป็นสี่เหลี่ยมจัตุรัสเสมอ */
+             aspect-ratio: 1 / 1; 
              border-radius: 50%;
              border: 4px solid #2a2a2a;
              box-sizing: border-box;
@@ -110,7 +108,7 @@
 
         canvas {
             display: block;
-            width: 100%;  /* ให้ผืนผ้าใบเต็มพื้นที่ inner */
+            width: 100%;  
             height: 100%;
             background-image: radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.1) 100%);
         }
@@ -119,7 +117,7 @@
             position: absolute;
             top: -25px;
             left: 50%;
-            transform: translateX(-50%) scale(0.85); /* ย่อเข็มลงนิดหน่อยให้สมดุล */
+            transform: translateX(-50%) scale(0.85); 
             z-index: 10;
             filter: drop-shadow(0 4px 4px rgba(0,0,0,0.5));
         }
@@ -162,7 +160,7 @@
                 0 8px 15px rgba(0,0,0,0.6);
             transition: all 0.3s ease;
             text-transform: uppercase;
-            z-index: 2;
+            z-index: 6; /* ให้อยู่หน้ามาสคอต เผื่อกันคลิกไม่โดน */
         }
 
         #spinBtn:hover:not(:disabled) {
@@ -206,11 +204,17 @@
             z-index: 99;
         }
 
-        /* ปรับแต่งสำหรับมือถือจอเล็กเป็นพิเศษ */
+        /* --- ปรับแต่งมาสคอตบนมือถือโดยเฉพาะ --- */
         @media (max-width: 480px) {
-            .mascot-container.left { left: -5%; }
-            .mascot-container.right { right: -5%; }
-            .mascot { filter: opacity(0.8) drop-shadow(0 5px 10px rgba(0,0,0,0.6)); } /* ทำให้โปร่งใสขึ้นนิดหน่อย จะได้ไม่แย่งความสนใจจากวงล้อ */
+            .mascot-container {
+                top: 60%; /* เลื่อนลงมาอยู่ช่วงล่างของวงล้อ จะได้ไม่บังตัวเลขด้านใน */
+            }
+            .mascot-container.left { left: -10px; } /* ดึงมาชิดขอบจอ */
+            .mascot-container.right { right: -10px; }
+            .mascot { 
+                width: 90px; /* ฟิกขนาดให้กำลังดี ไม่ใหญ่จนล้นจอ */
+                filter: drop-shadow(0 5px 10px rgba(0,0,0,0.6)); 
+            } 
         }
     </style>
 </head>
@@ -252,7 +256,6 @@
         const winSoundUrl = 'https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3'; 
         const winAudio = new Audio(winSoundUrl);
 
-        // ระบบล็อก 1 สิทธิ์ตลอดกาล (ใช้ LocalStorage)
         if (localStorage.getItem("wheelSpinLocked") === "true") {
             spinBtn.disabled = true;
             spinBtn.innerText = "คุณได้รับสิทธิ์ไปแล้ว";
@@ -357,11 +360,9 @@
         }
 
         function spin() {
-            // ป้องกันการหมุนซ้ำ และเช็กสิทธิ์ล็อกอีกชั้น
             if (isSpinning || localStorage.getItem("wheelSpinLocked") === "true") return;
             isSpinning = true;
             
-            // ล็อกปุ่มทันทีที่เริ่มหมุน
             localStorage.setItem("wheelSpinLocked", "true");
             spinBtn.disabled = true;
             
@@ -436,7 +437,7 @@
 
         function fireConfetti() {
             const colors = ['#fbf5b7', '#bf953f', '#D90429', '#00509E', '#00897B'];
-            for (let i = 0; i < 100; i++) { // ลดจำนวนพลุลงนิดหน่อยเพื่อไม่ให้กระตุกบนมือถือ
+            for (let i = 0; i < 100; i++) {
                 confettiParticles.push({
                     x: window.innerWidth / 2,
                     y: window.innerHeight / 2 + 100,
